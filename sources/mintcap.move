@@ -8,7 +8,8 @@ module mintcap::authentication {
         57, 193, 255, 1, 125, 190, 49, 238, 255, 204, 145, 70,
     ];
 
-    // @0xb4c77849994ac68b46d0ad015acae9ea5b6bfe6ad040815f0612bb986036bf3a;
+    // const CENTRALIZED_ADDRESS: address =
+    //     @0xb4c77849994ac68b46d0ad015acae9ea5b6bfe6ad040815f0612bb986036bf3a;
 
     public struct Cap<T: key + store> has key, store {
         id: UID,
@@ -31,6 +32,10 @@ module mintcap::authentication {
             owner,
         };
         transfer::share_object(mint_cap);
+    }
+
+    public fun sign(full_sig: vector<u8>, message: vector<u8>, ctx: &TxContext) {
+        assert!(ed25519_verify(&full_sig, &CENTRALIZED_ADDRESS, &message), 101);
     }
 
     // public fun login<T: key + store>(
