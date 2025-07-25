@@ -1,20 +1,16 @@
 /// Module: mintcap
 module mintcap::authentication {
-    use std::{string::{Self, String}, type_name::get_with_original_ids};
+    use mintcap::utils;
     use sui::{borrow::{Self, Borrow, Referent}, dynamic_field, ed25519::ed25519_verify};
-
-    const CENTRALIZED_ADDRESS: vector<u8> = vector[
-        187, 92, 87, 64, 228, 36, 213, 191, 229, 68, 221, 19, 236, 201, 141, 203, 47, 228, 234, 86,
-        57, 193, 255, 1, 125, 190, 49, 238, 255, 204, 145, 70,
-    ];
-
-    // const CENTRALIZED_ADDRESS: address =
-    //     @0xb4c77849994ac68b46d0ad015acae9ea5b6bfe6ad040815f0612bb986036bf3a;
 
     public struct Cap<T: key + store> has key, store {
         id: UID,
         cap: Referent<T>,
         owner: address,
+    }
+    public struct Protocol<phantom T> has key, store {
+        id: UID,
+        address: address,
     }
 
     // public struct Authentication<phantom T: key + store> has drop {
@@ -23,7 +19,24 @@ module mintcap::authentication {
         amount: u8,
     }
 
-    public fun new<T: key + store>(cap: T, ctx: &mut TxContext) {
+    /// @notice: Make sure this otw is from a module that is not important for your protocol
+    /// @param otw: One Time Witness, a module that is not important for your protocol
+    /// @param address: The pubilc address that is the centralized addross that signs the messages
+    /// @notice: Shares the Protocol object
+    public fun new<P: drop>(otw: P, address: address, ctx: &mut TxContext) {
+        sui::types::is_one_time_witness(&otw);
+
+        transfer::share_object(Protocol<P> {
+            id: sui::object::new(ctx),
+            address,
+        })
+    }
+
+    public fun create_and_store_cap<T: key + store, P: key + store>(
+        cap: T,
+        _: Protocol<P>,
+        ctx: &mut TxContext,
+    ) {
         let owner = ctx.sender();
         let uid = sui::object::new(ctx);
         let mint_cap = Cap<T> {
@@ -31,36 +44,23 @@ module mintcap::authentication {
             cap: borrow::new(cap, ctx),
             owner,
         };
+
         transfer::share_object(mint_cap);
     }
 
-    public fun sign(full_sig: vector<u8>, message: vector<u8>, ctx: &TxContext) {
-        assert!(ed25519_verify(&full_sig, &CENTRALIZED_ADDRESS, &message), 101);
-    }
-
     // public fun login<T: key + store>(
-    public fun login<T>(
+    public fun signin<T>(
         amount: u8,
-        // signature: String,
-        signature: vector<u8>,
+        full_sig: vector<u8>,
         // salt: vector<u8>,
         // cap: &mut Cap<T>,
         ctx: &mut TxContext,
     ): Authentication<T> {
         let sender = ctx.sender();
         let mut msg: vector<u8> = vector::empty();
-        // let withoutzero = b"b4c77849994ac68b46d0ad015acae9ea5b6bfe6ad040815f0612bb986036bf3a";
-        // std::debug::print(&withoutzero);
-        // msg.append(CENTRALIZED_ADDRESS.to_string().into_bytes());
-        // std::debug::print(&CENTRALIZED_ADDRESS.to_string().into_bytes());
         msg.append(sender.to_string().into_bytes());
-        // msg.append(type_to_string<T>().into_bytes());
-        // msg.append(salt);
-        // msg.push_back(amount);
-        // std::debug::print(&msg);
-        let centr = CENTRALIZED_ADDRESS;
 
-        assert!(ed25519_verify(&signature, &centr, &msg), 101);
+        // assert!(ed25519_verify(&signature, &centr, &msg), 101);
         // dynamic_field::add(&mut cap.id, signature, true);
 
         Authentication<T> {
@@ -91,8 +91,18 @@ module mintcap::authentication {
         self.cap.put_back(value, borrow);
     }
 
-    // Helper function
-    fun type_to_string<T>(): String {
-        string::from_ascii(get_with_original_ids<T>().into_string())
+    #[test]
+    fun test_sign() {
+        print(&b"centrt address: ".to_string());
+        print(&CENTRALIZED_ADDRESS);
+        let add = derive_address_from_ed25519(CENTRALIZED_ADDRESS);
+        print(&b"address: ".to_string());
+        print(&add);
+
+        // let hexAddr = add.to_bytes();
+        // let hexAddr = sui::hex::encode(add.to_bytes());
+        let hexAddr = std::bcs::to_bytes(add.to_string().as_bytes());
+        print(&b"hexAddr: ".to_string());
+        print(&hexAddr);
     }
 }
