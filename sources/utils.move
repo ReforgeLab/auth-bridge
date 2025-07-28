@@ -1,5 +1,5 @@
-module mintcap::utils {
-    use mintcap::errors;
+module auth_bridge::utils {
+    use auth_bridge::errors;
     use std::{bcs, string::{Self, String}, type_name::get_with_original_ids};
     use sui::hash;
 
@@ -13,6 +13,8 @@ module mintcap::utils {
     public fun extract_signature_and_pubilc_key(full_sig: vector<u8>): (vector<u8>, vector<u8>) {
         let len = full_sig.length();
         assert!(len == Expected_len, errors::wrongFullSignatureLength!());
+        std::debug::print(&b"Full signature: ".to_string());
+        std::debug::print(&full_sig);
 
         let flag = *full_sig.borrow(0);
         assert!(flag == ED25519_FLAG, errors::notEd25519Signature!());
@@ -23,6 +25,8 @@ module mintcap::utils {
             raw_sig.push_back(*full_sig.borrow(index_sig));
             index_sig = index_sig + 1;
         };
+        std::debug::print(&b"Raw signature after construct raw_sig: ".to_string());
+        std::debug::print(&raw_sig);
 
         let mut raw_public_key = vector::empty<u8>();
         let mut i_public_key = index_sig; // Now index_sig is 65
@@ -30,6 +34,7 @@ module mintcap::utils {
             raw_public_key.push_back(*full_sig.borrow(i_public_key));
             i_public_key = i_public_key + 1;
         };
+
         (raw_sig, raw_public_key)
     }
 
@@ -51,7 +56,7 @@ module mintcap::utils {
         sui::address::from_bytes(sui::hash::blake2b256(&concatened))
     }
 
-    fun type_to_string<T>(): String {
+    public(package) fun type_to_string<T>(): String {
         string::from_ascii(get_with_original_ids<T>().into_string())
     }
 }

@@ -1,9 +1,8 @@
 [package]
-name = "mintcap"
-edition = "2024.beta" # edition = "legacy" to use legacy (pre-2024) Move
-# license = ""           # e.g., "MIT", "GPL", "Apache 2.0"
-# authors = ["..."]      # e.g., ["Joe Smith (joesmith@noemail.com)", "John Snow (johnsnow@noemail.com)"]
-
+name = "auth_bridge"
+edition = "2024.beta" 
+license = "MIT"   
+authors = ["Carl Klöfverskjöld (github.com/Reblixt)"]      
 [dependencies]
 
 # For remote import, use the `{ git = "...", subdir = "...", rev = "..." }`.
@@ -18,7 +17,7 @@ edition = "2024.beta" # edition = "legacy" to use legacy (pre-2024) Move
 # Override = { local = "../conflicting/version", override = true }
 
 [addresses]
-mintcap = "0x0"
+auth_bridge= "0x0"
 
 # Named addresses will be accessible in Move as `@name`. They're also exported:
 # for example, `std = "0x1"` is exported by the Standard Library.
