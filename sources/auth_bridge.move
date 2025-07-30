@@ -112,15 +112,14 @@ module auth_bridge::authentication {
             let value = *data.get(&v);
             if (v == b"sender".to_string()) {
                 acc.append(ctx.sender().to_string())
+            } else if (v == b"type".to_string()) {
+                acc.append(utils::type_to_string<T>())
             } else { acc.append(value); };
             if (protocol.config.output.contains(&v)) {
                 output.insert(v, value)
             };
-
             acc
         });
-        std::debug::print(&b"Message: ".to_string());
-        std::debug::print(&msg);
 
         let message = utils::hash_message(msg.into_bytes());
 
