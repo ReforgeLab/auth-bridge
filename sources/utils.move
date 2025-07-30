@@ -3,18 +3,16 @@ module auth_bridge::utils {
     use std::{bcs, string::{Self, String}, type_name::get_with_original_ids};
     use sui::hash;
 
-    const Expected_len: u64 = 1 + 32 + 64;
     const ED25519_FLAG: u8 = 0x00;
     const ED25519_SIG_LEN: u64 = 64;
     const ED25519_PK_LEN: u64 = 32;
+    const Expected_len: u64 = 1 + ED25519_SIG_LEN + ED25519_PK_LEN;
 
     /// Extracts the raw signature and public key from a full signature vector.
     /// @returns (raw_signature: vector<u8>, raw_public_key: vector<u8>)
     public fun extract_signature_and_pubilc_key(full_sig: vector<u8>): (vector<u8>, vector<u8>) {
         let len = full_sig.length();
         assert!(len == Expected_len, errors::wrongFullSignatureLength!());
-        std::debug::print(&b"Full signature: ".to_string());
-        std::debug::print(&full_sig);
 
         let flag = *full_sig.borrow(0);
         assert!(flag == ED25519_FLAG, errors::notEd25519Signature!());
@@ -25,8 +23,6 @@ module auth_bridge::utils {
             raw_sig.push_back(*full_sig.borrow(index_sig));
             index_sig = index_sig + 1;
         };
-        std::debug::print(&b"Raw signature after construct raw_sig: ".to_string());
-        std::debug::print(&raw_sig);
 
         let mut raw_public_key = vector::empty<u8>();
         let mut i_public_key = index_sig; // Now index_sig is 65
@@ -40,7 +36,7 @@ module auth_bridge::utils {
 
     /// Prepares a message for signing by adding the intent prefix and hashing it.
     /// @returns (hashed_message: vector<u8>)
-    public fun prepare_message(message: vector<u8>): vector<u8> {
+    public fun hash_message(message: vector<u8>): vector<u8> {
         let message_bcs = bcs::to_bytes(&message);
         let mut message_with_intent = x"030000"; // Sign personal message
         message_with_intent.append(message_bcs);
