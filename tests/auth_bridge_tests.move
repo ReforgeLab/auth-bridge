@@ -53,6 +53,13 @@ module auth_bridge::auth_tests {
     }
 
     #[test]
+    fun destroy_wrapper() {
+        let (mut scen, protocol, cap) = setup();
+        cap.destroy(protocol, scen.ctx());
+        scen.end();
+    }
+
+    #[test]
     fun signin() {
         let (mut scen, protocol, mut cap) = setup();
         let full_sig =

@@ -1,4 +1,3 @@
-/// Module: mintcap
 module auth_bridge::authentication {
     use auth_bridge::{errors, utils};
     use std::string::String;
@@ -9,9 +8,12 @@ module auth_bridge::authentication {
         vec_map::{Self, VecMap}
     };
 
-    public struct Config has store {
+    public struct Config has drop, store {
+        // Address is the cap owner.
         address: address,
-        input: VecMap<String, String>,
+        // Input keys are the keys that are used to sign the message.
+        input: vector<String>,
+        // Output keys are the keys that are used to return the output of the protocol.
         output: VecMap<String, String>,
     }
 
@@ -44,14 +46,6 @@ module auth_bridge::authentication {
     ) {
         sui::types::is_one_time_witness(&otw);
 
-        let input = input_keys.fold!<String, VecMap<String, String>>(
-            vec_map::empty<String, String>(),
-            |mut acc, v| {
-                acc.insert(v, b"".to_string());
-                acc
-            },
-        );
-
         let output = output_keys.fold!<String, VecMap<String, String>>(
             vec_map::empty<String, String>(),
             |mut acc, v| {
@@ -62,7 +56,7 @@ module auth_bridge::authentication {
 
         let config = Config {
             address,
-            input,
+            input: input_keys,
             output,
         };
 
@@ -72,6 +66,9 @@ module auth_bridge::authentication {
         })
     }
 
+    /// @notice: Creates a capability that contains the key and stores it in the protocol
+    /// @param protocol: The protocol object that contains the configuration
+    /// @param cap: The capability object that contains the key to be stored
     public fun create_and_store_cap<T: key + store, P>(
         _: &Protocol<P>,
         cap: T,
@@ -88,6 +85,13 @@ module auth_bridge::authentication {
         transfer::share_object(mint_cap);
     }
 
+    /// @notice: Sign in to the protocol with a full signature, It is important the order of the keys is the same as when the protocol object was created
+    /// @param protocol: The protocol object that contains the configuration
+    /// @param cap: The capability object that contains the key to be signed
+    /// @param full_sig: The full signature that contains the raw signature and the public key
+    /// @param data: The data that is used to sign the message
+    /// @notice: The T type is the same type as the key in the capability
+    /// @returns: Authentication that is used for contract operations
     public fun signin<T: key + store, P>(
         protocol: &Protocol<P>,
         cap: &mut Cap<T>,
@@ -98,25 +102,22 @@ module auth_bridge::authentication {
         let sender = ctx.sender();
 
         let (raw_sign, raw_public_key) = utils::extract_signature_and_pubilc_key(full_sig);
-        let protocol_keys = protocol.config.input.keys();
+        let protocol_keys = protocol.into_keys();
 
         assert!(
             protocol.config.address == utils::derive_address_from_ed25519(raw_public_key),
             errors::protocolAddrassNotMatch!(),
         );
-        // use a loop to append the string. Create a vector of strings in argument.
-        // Check with the config and loop them thrue so the order is correct
-        // let mut msg = b"0x".to_string();
+
         let mut output = vec_map::empty<String, String>();
         let msg: String = protocol_keys.fold!(b"0x".to_string(), |mut acc, v| {
-            let value = *data.get(&v);
             if (v == b"sender".to_string()) {
                 acc.append(ctx.sender().to_string())
             } else if (v == b"type".to_string()) {
                 acc.append(utils::type_to_string<T>())
-            } else { acc.append(value); };
+            } else { acc.append(*data.get(&v)); };
             if (protocol.config.output.contains(&v)) {
-                output.insert(v, value)
+                output.insert(v, *data.get(&v))
             };
             acc
         });
@@ -134,7 +135,13 @@ module auth_bridge::authentication {
         }
     }
 
-    public fun destroy<T: key + store>(self: Cap<T>, ctx: &mut TxContext) {
+    /// @notice: Destroys the protocol object and capability than sends the key back to the owner
+    /// @param self: The capability object that contains the key to be destroyed
+    public fun destroy<T: key + store, P>(
+        self: Cap<T>,
+        protocol: Protocol<P>,
+        ctx: &mut TxContext,
+    ) {
         let sender = ctx.sender();
         assert!(self.owner == sender, 102);
         let Cap {
@@ -146,13 +153,30 @@ module auth_bridge::authentication {
 
         transfer::public_transfer(cap, sender);
         id.delete();
+        let Protocol { id, .. } = protocol;
+        id.delete();
     }
 
+    /// @notice: Takes the key from the capability and returns it with a borrow
+    /// @param self: The capability object that contains the key to be taken
+    /// @param _: The authentication object that is used to verify the key
+    /// @returns: The key and a borrow that is used to return the key later
     public fun take_key<T: key + store>(self: &mut Cap<T>, _: Authentication<T>): (T, Borrow) {
         self.cap.borrow()
     }
 
+    /// @notice: Returns the key to the capability with a borrow
+    /// @param self: The capability object that contains the key to be returned
+    /// @param value: The key that is returned to the capability
+    /// @param borrow: The borrow that is used to return the key
+    /// @notice: The key must be the same as the one taken from the capability
+    /// @notice: The borrow must be the same as the one returned from the take_key
     public fun return_key<T: key + store>(self: &mut Cap<T>, value: T, borrow: Borrow) {
         self.cap.put_back(value, borrow);
+    }
+
+    /// @notice: Gettur for the input keys of the protocol
+    public fun into_keys<P>(self: &Protocol<P>): vector<String> {
+        self.config.input
     }
 }
