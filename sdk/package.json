@@ -1,0 +1,31 @@
+{
+  "name": "@reforgelab/auth-bridge",
+  "module": "./src/index.ts",
+  "description": "A Sdk to handle centralized personal message signature and verify it on chain to borrow a key object",
+  "type": "module",
+  "version": "0.1.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@mysten/bcs": "^1.7.0",
+    "@mysten/kiosk": "^0.12.16",
+    "@mysten/sui": "^1.35.0",
+    "axios": "^1.10.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "sui",
+    "framework",
+    "auth",
+    "sdk"
+  ]
+}

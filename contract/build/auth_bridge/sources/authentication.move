@@ -8,6 +8,10 @@ module auth_bridge::authentication {
         vec_map::{Self, VecMap}
     };
 
+    public struct Registry has key, store {
+        id: UID,
+    }
+
     public struct Config has drop, store {
         // Address is the cap owner.
         address: address,
@@ -33,18 +37,38 @@ module auth_bridge::authentication {
         output: VecMap<String, String>,
     }
 
-    /// @notice: Make sure this otw is from a module that is not important for your protocol
-    /// @param otw: One Time Witness, a module that is not important for your protocol
-    /// @param address: The pubilc address that is the centralized addross that signs the messages
-    /// @notice: Shares the Protocol object
-    public fun new<P: drop>(
-        otw: P,
+    fun init(ctx: &mut TxContext) {
+        transfer::share_object(Registry {
+            id: sui::object::new(ctx),
+        });
+    }
+
+    public fun default<T: key + store, P>(
+        registry: &mut Registry,
+        cap: T,
         address: address,
         input_keys: vector<String>,
         output_keys: vector<String>,
         ctx: &mut TxContext,
     ) {
-        sui::types::is_one_time_witness(&otw);
+        let protocol = new<P>(registry, address, input_keys, output_keys, ctx);
+        create_and_store_cap<T, P>(&protocol, cap, ctx);
+        transfer::share_object(protocol);
+    }
+
+    /// @notice: Make sure this otw is from a module that is not important for your protocol
+    /// @param otw: One Time Witness, a module that is not important for your protocol
+    /// @param address: The pubilc address that is the centralized addross that signs the messages
+    /// @notice: Shares the Protocol object
+    public fun new<P>(
+        registry: &mut Registry,
+        address: address,
+        input_keys: vector<String>,
+        output_keys: vector<String>,
+        ctx: &mut TxContext,
+    ): Protocol<P> {
+        dynamic_field::add(&mut registry.id, utils::type_to_string<P>(), true);
+        // sui::types::is_one_time_witness(&otw);
 
         let output = output_keys.fold!<String, VecMap<String, String>>(
             vec_map::empty<String, String>(),
@@ -59,11 +83,15 @@ module auth_bridge::authentication {
             input: input_keys,
             output,
         };
-
-        transfer::share_object(Protocol<P> {
+        Protocol<P> {
             id: sui::object::new(ctx),
             config,
-        })
+        }
+
+        // transfer::share_object(Protocol<P> {
+        //     id: sui::object::new(ctx),
+        //     config,
+        // })
     }
 
     /// @notice: Creates a capability that contains the key and stores it in the protocol
