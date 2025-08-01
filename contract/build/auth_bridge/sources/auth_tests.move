@@ -1,6 +1,6 @@
 #[test_only]
 module auth_bridge::auth_tests {
-    use auth_bridge::{authentication::{Self, Cap, Protocol, Registry}, utils};
+    use auth_bridge::authentication::{Self, Cap, Protocol, Registry};
     use std::debug::print;
     use sui::{test_scenario::{Self, Scenario}, test_utils::destroy, vec_map::{Self, VecMap}};
 
@@ -109,12 +109,15 @@ module auth_bridge::auth_tests {
             b"salt".to_string(),
         ];
 
+        let object = AUTH_TESTS {};
+
         scen.next_tx(SENDER);
         let protocol = authentication::new<AUTH_TESTS>(
             &mut registry,
             SENDER,
             keys,
             vector[b"amount".to_string()],
+            &object,
             scen.ctx(),
         );
         // scen.next_tx(SENDER);

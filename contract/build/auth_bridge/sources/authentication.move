@@ -56,9 +56,10 @@ module auth_bridge::authentication {
         address: address,
         input_keys: vector<String>,
         output_keys: vector<String>,
+        protocol: &P,
         ctx: &mut TxContext,
     ) {
-        let protocol = new<P>(registry, address, input_keys, output_keys, ctx);
+        let protocol = new<P>(registry, address, input_keys, output_keys, protocol, ctx);
         create_and_store_cap<T, P>(&protocol, cap, ctx);
         transfer::share_object(protocol);
     }
@@ -72,6 +73,7 @@ module auth_bridge::authentication {
         address: address,
         input_keys: vector<String>,
         output_keys: vector<String>,
+        _: &P,
         ctx: &mut TxContext,
     ): Protocol<P> {
         dynamic_field::add(&mut registry.id, utils::type_to_string<P>(), true);
