@@ -43,6 +43,13 @@ module auth_bridge::authentication {
         });
     }
 
+    /// @notice: Creates a new Protocol object and shares it
+    /// @param registry: The registry object that contains the protocol to prevent duplicates
+    /// @param cap: The capability object that contains the key to be stored
+    /// @param address: The public address that is the centralized address that signs the messages
+    /// @param input_keys: The input keys that are used to sign the message
+    /// @param output_keys: The output keys that are used to return the output of the protocol
+    #[allow(lint(share_owned))]
     public fun default<T: key + store, P>(
         registry: &mut Registry,
         cap: T,
@@ -68,7 +75,6 @@ module auth_bridge::authentication {
         ctx: &mut TxContext,
     ): Protocol<P> {
         dynamic_field::add(&mut registry.id, utils::type_to_string<P>(), true);
-        // sui::types::is_one_time_witness(&otw);
 
         let output = output_keys.fold!<String, VecMap<String, String>>(
             vec_map::empty<String, String>(),
@@ -87,11 +93,6 @@ module auth_bridge::authentication {
             id: sui::object::new(ctx),
             config,
         }
-
-        // transfer::share_object(Protocol<P> {
-        //     id: sui::object::new(ctx),
-        //     config,
-        // })
     }
 
     /// @notice: Creates a capability that contains the key and stores it in the protocol
@@ -206,5 +207,9 @@ module auth_bridge::authentication {
     /// @notice: Gettur for the input keys of the protocol
     public fun into_keys<P>(self: &Protocol<P>): vector<String> {
         self.config.input
+    }
+    #[test_only]
+    public fun test_init(ctx: &mut TxContext) {
+        init(ctx)
     }
 }

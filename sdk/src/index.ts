@@ -4,6 +4,9 @@ import type { IntentScope } from "@mysten/sui/cryptography";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { Transaction } from "@mysten/sui/transactions";
 
+const packageId = "";
+const registry = "";
+
 export class AuthBridgeSdk {
 	private readonly privateKey: Ed25519Keypair;
 	constructor(privateKey: Uint8Array | string) {
@@ -64,4 +67,3 @@ export class AuthBridgeSdk {
 // const signResult = await keypair.signPersonalMessage(messageBytes);
 //
 // const fullSigBytes: Uint8Array = fromBase64(signResult.signature);
-

@@ -208,4 +208,8 @@ module auth_bridge::authentication {
     public fun into_keys<P>(self: &Protocol<P>): vector<String> {
         self.config.input
     }
+    #[test_only]
+    public fun test_init(ctx: &mut TxContext) {
+        init(ctx)
+    }
 }
