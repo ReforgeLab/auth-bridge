@@ -49,6 +49,7 @@ module auth_bridge::authentication {
     /// @param address: The public address that is the centralized address that signs the messages
     /// @param input_keys: The input keys that are used to sign the message
     /// @param output_keys: The output keys that are used to return the output of the protocol
+    /// @param protocol: The objcet type will be registered in the registry
     #[allow(lint(share_owned))]
     public fun default<T: key + store, P>(
         registry: &mut Registry,
@@ -67,6 +68,9 @@ module auth_bridge::authentication {
     /// @notice: Make sure this otw is from a module that is not important for your protocol
     /// @param otw: One Time Witness, a module that is not important for your protocol
     /// @param address: The pubilc address that is the centralized addross that signs the messages
+    /// @param input_keys: The input keys that are used to sign the message
+    /// @param output_keys: The output keys that are used to return the output of the protocol
+    /// @param protocol: The objcet type will be registered in the registry
     /// @notice: Shares the Protocol object
     public fun new<P>(
         registry: &mut Registry,

@@ -3,6 +3,7 @@ import type { SuiClient } from "@mysten/sui/client";
 import type { IntentScope } from "@mysten/sui/cryptography";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { Transaction } from "@mysten/sui/transactions";
+import type { InitializeParams } from "./types";
 
 const packageId = "";
 const registry = "";
@@ -17,7 +18,7 @@ export class AuthBridgeSdk {
 		}
 	}
 
-	async initializeProtocol() {}
+	async initialize({}: InitializeParams) {}
 	async storeCap() {}
 	async signin() {}
 	async borrowCap() {}
