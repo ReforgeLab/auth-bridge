@@ -1,6 +1,6 @@
 #[test_only]
 module auth_bridge::auth_tests {
-    use auth_bridge::authentication::{Self, Cap, Protocol, Registry};
+    use auth_bridge::authentication::{Self, HolderCap, Protocol, Registry};
     use std::debug::print;
     use sui::{test_scenario::{Self, Scenario}, test_utils::destroy, vec_map::{Self, VecMap}};
 
@@ -66,16 +66,16 @@ module auth_bridge::auth_tests {
         let full_sig =
             x"009afa406c6e2bd9b735ec4d7a66ef3dc41d2411cdb1bb9d0cabb8dfd9addb4dce7cefb43f99739fbddbe84a0bcb5d379b341eb81f213e62d8d41b7f9e45e82d02bb5c5740e424d5bfe544dd13ecc98dcb2fe4ea5639c1ff017dbe31eeffcc9146";
         let keys = vector[
-            b"sender".to_string(),
-            b"amount".to_string(),
-            b"type".to_string(),
             b"salt".to_string(),
+            b"amount".to_string(),
+            b"sender".to_string(),
+            b"type".to_string(),
         ];
         let values = vector[
-            b"".to_string(),
+            b"ron102".to_string(),
             b"8".to_string(),
             b"".to_string(),
-            b"ron102".to_string(),
+            b"".to_string(),
         ];
         let input_keys = vec_map::from_keys_values(keys, values);
 
@@ -93,7 +93,7 @@ module auth_bridge::auth_tests {
         scen.end();
     }
 
-    fun setup(): (Scenario, Protocol<AUTH_TESTS>, Cap<TestKey>) {
+    fun setup(): (Scenario, Protocol<AUTH_TESTS>, HolderCap<TestKey>) {
         let mut scen = sui::test_scenario::begin(Alice);
         authentication::test_init(scen.ctx());
         scen.next_tx(Alice);
@@ -124,7 +124,7 @@ module auth_bridge::auth_tests {
         // let protocol = scen.take_shared<Protocol<AUTH_TESTS>>();
         protocol.create_and_store_cap(key, scen.ctx());
         scen.next_tx(SENDER);
-        let cap = scen.take_shared<Cap<TestKey>>();
+        let cap = scen.take_shared<HolderCap<TestKey>>();
         destroy(registry);
 
         (scen, protocol, cap)

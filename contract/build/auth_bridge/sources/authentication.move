@@ -21,7 +21,7 @@ module auth_bridge::authentication {
         output: VecMap<String, String>,
     }
 
-    public struct Cap<T: key + store> has key, store {
+    public struct HolderCap<T: key + store> has key, store {
         id: UID,
         cap: Referent<T>,
         owner: address,
@@ -49,6 +49,7 @@ module auth_bridge::authentication {
     /// @param address: The public address that is the centralized address that signs the messages
     /// @param input_keys: The input keys that are used to sign the message
     /// @param output_keys: The output keys that are used to return the output of the protocol
+    /// @param protocol: The objcet type will be registered in the registry
     #[allow(lint(share_owned))]
     public fun default<T: key + store, P>(
         registry: &mut Registry,
@@ -67,6 +68,9 @@ module auth_bridge::authentication {
     /// @notice: Make sure this otw is from a module that is not important for your protocol
     /// @param otw: One Time Witness, a module that is not important for your protocol
     /// @param address: The pubilc address that is the centralized addross that signs the messages
+    /// @param input_keys: The input keys that are used to sign the message
+    /// @param output_keys: The output keys that are used to return the output of the protocol
+    /// @param protocol: The objcet type will be registered in the registry
     /// @notice: Shares the Protocol object
     public fun new<P>(
         registry: &mut Registry,
@@ -107,7 +111,7 @@ module auth_bridge::authentication {
     ) {
         let owner = ctx.sender();
         let uid = sui::object::new(ctx);
-        let mint_cap = Cap<T> {
+        let mint_cap = HolderCap<T> {
             id: uid,
             cap: borrow::new(cap, ctx),
             owner,
@@ -125,7 +129,7 @@ module auth_bridge::authentication {
     /// @returns: Authentication that is used for contract operations
     public fun signin<T: key + store, P>(
         protocol: &Protocol<P>,
-        cap: &mut Cap<T>,
+        cap: &mut HolderCap<T>,
         full_sig: vector<u8>,
         data: VecMap<String, String>,
         ctx: &mut TxContext,
@@ -169,13 +173,13 @@ module auth_bridge::authentication {
     /// @notice: Destroys the protocol object and capability than sends the key back to the owner
     /// @param self: The capability object that contains the key to be destroyed
     public fun destroy<T: key + store, P>(
-        self: Cap<T>,
+        self: HolderCap<T>,
         protocol: Protocol<P>,
         ctx: &mut TxContext,
     ) {
         let sender = ctx.sender();
         assert!(self.owner == sender, 102);
-        let Cap {
+        let HolderCap {
             id,
             cap,
             ..,
@@ -192,7 +196,10 @@ module auth_bridge::authentication {
     /// @param self: The capability object that contains the key to be taken
     /// @param _: The authentication object that is used to verify the key
     /// @returns: The key and a borrow that is used to return the key later
-    public fun take_key<T: key + store>(self: &mut Cap<T>, _: Authentication<T>): (T, Borrow) {
+    public fun take_key<T: key + store>(
+        self: &mut HolderCap<T>,
+        _: Authentication<T>,
+    ): (T, Borrow) {
         self.cap.borrow()
     }
 
@@ -202,7 +209,7 @@ module auth_bridge::authentication {
     /// @param borrow: The borrow that is used to return the key
     /// @notice: The key must be the same as the one taken from the capability
     /// @notice: The borrow must be the same as the one returned from the take_key
-    public fun return_key<T: key + store>(self: &mut Cap<T>, value: T, borrow: Borrow) {
+    public fun return_key<T: key + store>(self: &mut HolderCap<T>, value: T, borrow: Borrow) {
         self.cap.put_back(value, borrow);
     }
 
