@@ -16,8 +16,10 @@ authors = ["Carl Klöfverskjöld (github.com/Reblixt)"]
 # override use `override = true`
 # Override = { local = "../conflicting/version", override = true }
 
+# upgradeCap 0x5b83d6d95e156e305d41dffa8609123243fdc9bdd3e3e85147343cd52192f281
+# registry 	0xa18665103fe3c21085e1f0447933eabc6c7d3c5ca480fc89b808f0964d2b621f
 [addresses]
-auth_bridge= "0x0"
+auth_bridge= "0x90c2c698a0e764a4821675cf74c306533bbb8df57b2e590a24faf86ecc252788";
 
 # Named addresses will be accessible in Move as `@name`. They're also exported:
 # for example, `std = "0x1"` is exported by the Standard Library.

@@ -66,7 +66,6 @@ module auth_bridge::authentication {
     }
 
     /// @notice: Make sure this otw is from a module that is not important for your protocol
-    /// @param otw: One Time Witness, a module that is not important for your protocol
     /// @param address: The pubilc address that is the centralized addross that signs the messages
     /// @param input_keys: The input keys that are used to sign the message
     /// @param output_keys: The output keys that are used to return the output of the protocol

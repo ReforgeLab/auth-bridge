@@ -11,8 +11,10 @@ import type {
 	WithdrawCapParams,
 } from "./types";
 
-const packageId = "";
-const registry = "";
+const packageId =
+	"0x90c2c698a0e764a4821675cf74c306533bbb8df57b2e590a24faf86ecc252788";
+const registry =
+	"0xa18665103fe3c21085e1f0447933eabc6c7d3c5ca480fc89b808f0964d2b621f";
 
 /**
  * Authentication Bridge SDK

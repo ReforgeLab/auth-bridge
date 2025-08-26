@@ -3,7 +3,7 @@
   "module": "./src/index.ts",
   "description": "A Sdk to handle centralized personal message signature and verify it on chain to borrow a key object",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": false,
   "publishConfig": {
     "access": "public"
