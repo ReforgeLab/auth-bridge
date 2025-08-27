@@ -1,20 +1,46 @@
 {
   "name": "@reforgelab/auth-bridge",
-  "module": "./src/index.ts",
   "description": "A Sdk to handle centralized personal message signature and verify it on chain to borrow a key object",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "private": false,
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:esm && npm run build:types",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:types": "tsc -p tsconfig.types.json",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --fix"
+  },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
+    "@types/bun": "latest",
     "typescript": "^5.8.3"
   },
+  "peerDependencies": {},
   "dependencies": {
     "@mysten/bcs": "^1.7.0",
     "@mysten/kiosk": "^0.12.16",
