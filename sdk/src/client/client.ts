@@ -51,8 +51,8 @@ export class AuthBridgeSdk {
 	 * const sdk = new AuthBridgeSdk();
 	 * ```
 	 */
-	constructor(privateKey?: Uint8Array | string) {
-		if (Array.isArray(privateKey) && privateKey.length === 32) {
+	constructor(privateKey?: string | Uint8Array) {
+		if ((privateKey && privateKey.length === 70) || Array.isArray(privateKey)) {
 			this.privateKey = Ed25519Keypair.fromSecretKey(privateKey);
 		} else if (typeof privateKey === "string") {
 			this.privateKey = Ed25519Keypair.deriveKeypairFromSeed(privateKey);

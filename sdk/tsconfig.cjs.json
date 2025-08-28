@@ -4,7 +4,7 @@
 		"target": "ES2020",
 		"module": "CommonJS",
 		"moduleResolution": "node",
-		"outDir": "./dist/cjs",
+		"outDir": "./dist/cjs-temp",
 		"declaration": false,
 		"noEmit": false,
 		"allowImportingTsExtensions": false,
