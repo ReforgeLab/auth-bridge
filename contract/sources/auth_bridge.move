@@ -148,13 +148,17 @@ module auth_bridge::authentication {
             if (v == b"sender".to_string()) {
                 acc.append(ctx.sender().to_string())
             } else if (v == b"type".to_string()) {
-                acc.append(utils::type_to_string<T>())
+                let mut appe = b"0x".to_string();
+                appe.append(utils::type_to_string<T>());
+                acc.append(appe)
             } else { acc.append(*data.get(&v)); };
             if (protocol.config.output.contains(&v)) {
                 output.insert(v, *data.get(&v))
             };
             acc
         });
+
+        std::debug::print(&msg);
 
         let message = utils::hash_message(msg.into_bytes());
 
@@ -216,6 +220,15 @@ module auth_bridge::authentication {
     public fun into_keys<P>(self: &Protocol<P>): vector<String> {
         self.config.input
     }
+
+    public fun get_initiator<T>(self: &Authentication<T>): address {
+        self.initiater
+    }
+
+    public fun get_output<T>(self: &Authentication<T>): VecMap<String, String> {
+        self.output
+    }
+
     #[test_only]
     public fun test_init(ctx: &mut TxContext) {
         init(ctx)

@@ -17,7 +17,7 @@ module auth_bridge::auth_tests {
         let (mut scen, protocol, mut cap) = setup();
 
         let full_sig =
-            x"009afa406c6e2bd9b735ec4d7a66ef3dc41d2411cdb1bb9d0cabb8dfd9addb4dce7cefb43f99739fbddbe84a0bcb5d379b341eb81f213e62d8d41b7f9e45e82d02bb5c5740e424d5bfe544dd13ecc98dcb2fe4ea5639c1ff017dbe31eeffcc9146";
+            x"00dd1161d464e69c8685579c2aa8ad4edbbc41b7b730cb821d9f3c1be0328c57ea87c5c08f5481c189c93dc4bc050fa2f77d5da6c98abab603f47a525ce3bd7803bb5c5740e424d5bfe544dd13ecc98dcb2fe4ea5639c1ff017dbe31eeffcc9146";
 
         let keys = vector[
             b"sender".to_string(),
@@ -64,13 +64,14 @@ module auth_bridge::auth_tests {
     fun signin() {
         let (mut scen, protocol, mut cap) = setup();
         let full_sig =
-            x"009afa406c6e2bd9b735ec4d7a66ef3dc41d2411cdb1bb9d0cabb8dfd9addb4dce7cefb43f99739fbddbe84a0bcb5d379b341eb81f213e62d8d41b7f9e45e82d02bb5c5740e424d5bfe544dd13ecc98dcb2fe4ea5639c1ff017dbe31eeffcc9146";
+            x"00dd1161d464e69c8685579c2aa8ad4edbbc41b7b730cb821d9f3c1be0328c57ea87c5c08f5481c189c93dc4bc050fa2f77d5da6c98abab603f47a525ce3bd7803bb5c5740e424d5bfe544dd13ecc98dcb2fe4ea5639c1ff017dbe31eeffcc9146";
         let keys = vector[
             b"salt".to_string(),
             b"amount".to_string(),
             b"sender".to_string(),
             b"type".to_string(),
         ];
+
         let values = vector[
             b"ron102".to_string(),
             b"8".to_string(),
