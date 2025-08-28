@@ -158,8 +158,6 @@ module auth_bridge::authentication {
             acc
         });
 
-        std::debug::print(&msg);
-
         let message = utils::hash_message(msg.into_bytes());
 
         assert!(
@@ -227,6 +225,10 @@ module auth_bridge::authentication {
 
     public fun get_output<T>(self: &Authentication<T>): VecMap<String, String> {
         self.output
+    }
+
+    public fun get_one_output<T>(self: &Authentication<T>, key: &String): &String {
+        self.output.get(key)
     }
 
     #[test_only]

@@ -71,10 +71,13 @@ module auth_bridge::auth_tests {
             b"sender".to_string(),
             b"type".to_string(),
         ];
-
+        // let amount: u64 = 8;
+        // std::debug::print(&amount.to_string());
         let values = vector[
             b"ron102".to_string(),
+            // amount.to_string(),
             b"8".to_string(),
+            // b.to_string(),
             b"".to_string(),
             b"".to_string(),
         ];
