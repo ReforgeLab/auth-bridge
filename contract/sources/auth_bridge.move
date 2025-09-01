@@ -219,6 +219,14 @@ module auth_bridge::authentication {
         self.config.input
     }
 
+    public fun protocol_ouput_keys<P>(self: &Protocol<P>): vector<String> {
+        self.config.output.keys()
+    }
+
+    public fun into_output_keys<T>(self: &Authentication<T>): vector<String> {
+        self.output.keys()
+    }
+
     public fun get_initiator<T>(self: &Authentication<T>): address {
         self.initiater
     }
