@@ -2,20 +2,20 @@
 compiled_package_info:
   package_name: auth_bridge
   address_alias_instantiation:
-    auth_bridge: "0000000000000000000000000000000000000000000000000000000000000000"
+    auth_bridge: 78bdf769b85d6a0fa787561739df0e55063d9eca79aa1cce3904f3e9aeac3273
     bridge: 000000000000000000000000000000000000000000000000000000000000000b
     std: "0000000000000000000000000000000000000000000000000000000000000001"
     sui: "0000000000000000000000000000000000000000000000000000000000000002"
     sui_system: "0000000000000000000000000000000000000000000000000000000000000003"
-  source_digest: 5F1A1E3E6F5D9A2F81F8B66F4086EDC9F1E054F4F6E909FB8D8F6A46F5158D57
+  source_digest: 86E0BC6870BA9AC313EE56C2FB76786F858753CF7C195B5CBFD8F1CB4117AEDE
   build_flags:
-    dev_mode: false
-    test_mode: false
+    dev_mode: true
+    test_mode: true
     generate_docs: false
     save_disassembly: false
     install_dir: ~
     force_recompilation: false
-    lock_file: "./Move.lock"
+    lock_file: ~
     fetch_deps_only: false
     skip_fetch_latest_git_deps: false
     default_flavor: sui
